@@ -24,6 +24,7 @@ int count_neighbors(std::array<std::array<cell, ROWS>, COLS>& board, int row, in
 int main(){
     sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Conway's Game Of Life");
     sf::Mouse ms;
+    bool held = false;
 
     std::array<std::array<cell, ROWS>, COLS> board;
     init_board(board);
@@ -38,11 +39,12 @@ int main(){
                     break;
                 case sf::Event::MouseButtonPressed:
                     if(ev.mouseButton.button == sf::Mouse::Left){
-                        sf::Vector2f pos{ms.getPosition(window)};
-                        int r = pos.x / SIZE;
-                        int c = pos.y / SIZE;
-                        board[r][c].cube.setFillColor(sf::Color::Green);
-                        board[r][c].state = "Alive";
+                        held = true;
+                    }
+                    break;
+                case sf::Event::MouseButtonReleased:
+                    if(ev.mouseButton.button == sf::Mouse::Left){
+                        held = false;
                     }
                     break;
                 case sf::Event::KeyPressed:
@@ -62,6 +64,14 @@ int main(){
                     break;
             }
 
+        }
+        
+        if(held){
+            sf::Vector2f pos{ms.getPosition(window)};
+            int r = pos.x / SIZE;
+            int c = pos.y / SIZE;
+            board[r][c].cube.setFillColor(sf::Color::Green);
+            board[r][c].state = "Alive";
         }
 
         window.clear(sf::Color(sf::Color::Green));
