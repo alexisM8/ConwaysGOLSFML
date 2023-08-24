@@ -12,7 +12,6 @@ constexpr int ROWS = 64;
 constexpr int COLS = 64;
 constexpr int SIZE = WINDOW_HEIGHT / ROWS;
 
-
 struct cell{
     sf::RectangleShape cube;
     std::string state{"Dead"};
@@ -40,8 +39,8 @@ int main(){
                 case sf::Event::MouseButtonPressed:
                     if(ev.mouseButton.button == sf::Mouse::Left){
                         sf::Vector2f pos{ms.getPosition(window)};
-                        auto r = pos.x / SIZE;
-                        auto c = pos.y / SIZE;
+                        int r = pos.x / SIZE;
+                        int c = pos.y / SIZE;
                         board[r][c].cube.setFillColor(sf::Color::Green);
                         board[r][c].state = "Alive";
                     }
@@ -105,23 +104,25 @@ int count_neighbors(std::array<std::array<cell, ROWS>, COLS>& board, int row, in
 }
 
 void compute_next_iteration(std::array<std::array<cell, ROWS>, COLS>& board){
+    std::array<std::array<cell, ROWS>, COLS> nextBoard{board};
+
     for(int r = 0; r < ROWS; ++r){
         for(int c = 0; c < COLS; ++c){
             int n = count_neighbors(board, r, c);
             if(board[r][c].state == "Dead"){
                 if(n == 3){
-                    board[r][c].state = "Alive";
-                    board[r][c].cube.setFillColor(sf::Color::Green);
+                    nextBoard[r][c].state = "Alive";
+                    nextBoard[r][c].cube.setFillColor(sf::Color::Green);
                 } 
             } else {
-                if(n == 2 || n == 3){
-                    ;
-                } else {
-                    board[r][c].state = "Dead";
-                    board[r][c].cube.setFillColor(sf::Color::Black);
+                if(n < 2 || n > 3){
+                    nextBoard[r][c].state = "Dead";
+                    nextBoard[r][c].cube.setFillColor(sf::Color::Black);
                 }
             }
         }
     }
+
+    board = nextBoard;
 }
 
